@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./node_modules/chart.js/dist/chart.min.js"></script>
+    <script src="./node_modules/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="shortcut icon" href="#">
+</head>
+
+<body>
+
+    <label for="user">Usuario:</label>
+    <input id="user" type="text" class="border-2">
+    <br><br>
+    <label for="password">Contraseña: </label>
+    <input id="password" type="password" class="border-2">
+    <br><br>
+    <button class="border-2 bg-blue-500 text-white" type="submit" id="button" onclick="iniciar_sesion()">Entrar</button>
+    <br><br>
+    <button class="border-2 bg-blue-500 text-white" type="submit" id="button" onclick="nepe()">nepe</button>
+    <br><br>
+
+    <h1 class="">Manu Weko</h1>
+    <canvas id="myChart" width="1600" height="900"></canvas>
+
+    <script>
+        //label x-axis
+        const c_tkt = [1, 2, 3, 4, 5, 6];
+
+        //data para chart
+        const peso_sernapesca = [2500, 5000, 7500, 10000, 12500, 15000];
+        const backgroundcolor = [];
+
+        for(i = 0; i < c_tkt.length; i++ ){
+            if(peso_sernapesca[i] <= 5000){backgroundcolor.push('yellow')}
+            if(peso_sernapesca[i] > 5000 && peso_sernapesca[i] <= 10000){backgroundcolor.push('orange')}
+            if(peso_sernapesca[i] > 10000 && peso_sernapesca[i] < 15000){backgroundcolor.push('blue')}
+            if(peso_sernapesca[i] >= 15000){backgroundcolor.push('green')}
+        }
+
+        console.log(backgroundcolor);
+
+        const options = {
+            authorization: '',
+            'Content-Type': 'application/json'
+        };
+
+
+        let url = 'http://192.168.1.164:81/romana2/backend/public/api/login';
+        let urlTkt = 'http://192.168.1.164:81/romana2/backend/public/api/tickets'
+
+
+        var ctx = document.getElementById("myChart");
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: c_tkt,
+                datasets: [{
+                    data: peso_sernapesca,
+                    label: "peso_sernapesca",
+                    fill: false,
+                    backgroundColor: backgroundcolor,
+                    borderColor: backgroundcolor,
+                    borderWidth: 1
+                }]
+            }
+        });
+
+        function iniciar_sesion() {
+            let user = document.getElementById('user').value;
+            let password = document.getElementById('password').value;
+            console.log(`user: ${user}     pasword: ${password}`);
+            if (user && password) {
+                axios.post(
+                        url, {
+                            user: user,
+                            password: password
+                        }
+                    ).then(res => {
+                        console.log(res.data);
+                        options.authorization = res.data.token;
+                        token = res.data.token
+                        console.log(token)
+                    })
+                    .catch(err => {
+                        console.log('error', err);
+                    })
+            }
+        }
+
+        function nepe() {
+            axios.get(url, options)
+                .then(res => {
+                    console.log(res.data)
+                })
+                .catch(error => console.log('nepe error'))
+        }
+
+        function ticketStorer() {
+            axios.get(urlTkt, options), {
+
+            }
+        }
+    </script>
+
+</body>
+
+</html>
